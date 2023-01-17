@@ -18,6 +18,12 @@ Automatique Electronique - Systèmes Embarqués
 
 ### Asservissement avec correcteur numérique avec µcontrôleur
 
+$$a_0 = \frac{Te+2\tau_c}{2\tau_i}$$
+
+$$a_1 = \frac{Te-2\tau_c}{2\tau_i}$$
+
+$$C(z) = \frac{a_0 z - a_1}{z - 1}$$
+
 #### Vérification en simulation - comparaison Simulink/Keil
 
 #### Implémentation du correcteur
