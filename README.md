@@ -18,10 +18,17 @@ Automatique Electronique - Systèmes Embarqués
 
 ### Asservissement avec correcteur numérique avec µcontrôleur
 
+En continu : 
+$$C(p) = \frac{1 + tau_c p}{tau_i p} = \frac{K}{p} + \frac{tau_c}{tau_i}$$
+
+Avec la transformée bilinéaire (Méthode de Tustin) on retrouve la fonction de transfert de C correspondante discrétisée
+$$p = \frac{2}{T_e} \frac{z - 1}{z + 1}$$
+
+En discret : 
+On pose a0 et a1 tels que :  
 $$a_0 = \frac{Te+2\tau_c}{2\tau_i}$$
-
 $$a_1 = \frac{Te-2\tau_c}{2\tau_i}$$
-
+On a donc la fonction de transfert de C en Z suivante :  
 $$C(z) = \frac{a_0 z - a_1}{z - 1}$$
 
 #### Vérification en simulation - comparaison Simulink/Keil
