@@ -26,8 +26,8 @@ $$p = \frac{2}{T_e} \frac{z - 1}{z + 1}$$
 
 En discret : 
 On pose a0 et a1 tels que :  
-$$a_0 = \frac{Te+2\tau_c}{2\tau_i}$$
-$$a_1 = \frac{Te-2\tau_c}{2\tau_i}$$
+$$a_0 = \frac{T_e+2\tau_c}{2\tau_i}$$
+$$a_1 = \frac{T_e-2\tau_c}{2\tau_i}$$
 On a donc la fonction de transfert de C en Z suivante :  
 $$C(z) = \frac{a_0 z - a_1}{z - 1}$$
 
