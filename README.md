@@ -47,7 +47,7 @@ Le capteur de courant : N(p)\
 Le conditionnement et les filtres : F(p)
 
 Ensuite, grâce à la documentation technique nous pouvons trouver quelles sont les grandeurs physiques que nous devons prendre en compte, quels sont les points de repos et quelles sont les amplitudes de chacun des signaux. Nous arrivons au schéma bloc suivant: 
-<img width="564" alt="schema_bloc" src="https://user-images.githubusercontent.com/98895859/214151944-ac00c694-b379-4b94-b9c6-717add630fa8.png">
+<img width="564" alt="schema_bloc" src="https://user-images.githubusercontent.com/98895859/214151944-ac00c694-b379-4b94-b9c6-717add630fa8.png">\
 Figure 1.1.2 - Schéma bloc qui simplifie et fusionne entièrement le système de régulation de couple, avec unités physiques ainsi que les plages de valeurs admises.
 
 On notera C(p), le microcontrôleur dans lequel on implémentera notre correcteur discret.
