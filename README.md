@@ -109,7 +109,7 @@ Ce correcteur est donc parfait pour nos besoins. Il suffit de trouver les diffé
 Dans ce BE, nous avons choisi d’appliquer la compensation de pôle. Nous allons donc compenser le pôle du moteur (tau' = 0.0020) et nous avons donc cette équation à résoudre:\
 <img width="553" alt="formule_K_glob" src="https://user-images.githubusercontent.com/98895859/214154885-238db919-0137-4096-bd9f-d7431f168ee5.png">\
 Ainsi, on peut facilement calculer tau_i:\
-<img width="467" alt="calcul_tau_i" src="https://user-images.githubusercontent.com/98895859/214155051-01e8e633-ddf9-4d5f-883c-4e8ad0f84828.png">\
+<img width="467" alt="calcul_tau_i" src="https://user-images.githubusercontent.com/98895859/214155051-01e8e633-ddf9-4d5f-883c-4e8ad0f84828.png">
 
 Nous avons donc tous les éléments pour calculer notre correcteur et faire les simulations sur Matlab et simulink !
 #### Version 1 : 
@@ -155,9 +155,11 @@ Figure 1.3.1 - Simulink - Version 3 du système, on a enlevé le bloc correcteur
 ![reponse_echelon_plus_petit_discret_v3](https://user-images.githubusercontent.com/98895859/214155651-dd6fbe22-cbde-428d-b6a5-ff83fea56cb5.PNG)\
 Figure 1.3.2 - Réponse à un échelon de 1.65 avec le correcteur discret. On remarque que le phénomène de dépassement lié à la saturation y est toujours.  
 ![erreur_continue_avec_C_z_v3](https://user-images.githubusercontent.com/98895859/214155686-727b3ebb-618d-42db-9d96-8b45034d32f0.PNG)\
-Figure 1.3.3 - L’erreur lorsque l’on passe en discret.\ 
+Figure 1.3.3 - L’erreur lorsque l’on passe en discret.
+
+
 ![alpha_discret_v3](https://user-images.githubusercontent.com/98895859/214155739-be04db83-4f66-48a6-ad53-e1f572024de2.PNG)\
-Figure 1.3.4 - Le signal PWM de alpha lorsque le correcteur est discrétisé.\
+Figure 1.3.4 - Le signal PWM de alpha lorsque le correcteur est discrétisé.
 #### Version 4 et 5 : 
 ![simulink_corr_seul_v5](https://user-images.githubusercontent.com/98895859/214155832-5f484c40-5854-45e9-9032-9b2973900720.PNG)
 Figure 1.3.5 - Simulink quand on souhaitait vérifier le bon comportement du correcteur discret avec le correcteur codé avec Keil. On excite le bloc correcteur avec un petit échelon d’entrée afin de mettre en évidence le K du premier pas de la réponse, qui est une des caractéristiques de notre correcteur PI.  
@@ -181,10 +183,10 @@ Afin de libérer les ressources du microcontrôleur, ainsi de faire intervenir p
 On a retrouvé l’équation récurrente pour le calcul de l’alpha de la manière suivante : 
 $$C(z) = \frac{Y(z)}{U(z)} = \frac{a_0 z - a_1}{z - 1}$$ 
 $$Y(z)(z - 1) = U(z)(a_0 z - a_1) $$
-Avec la transformée inverse en z, on obtient:\
+Avec la transformée inverse en z, on obtient:
 <div align="center">y<sub>n+1</sub> - y<sub>n</sub> = a<sub>0</sub> e<sub>n+1</sub> - a<sub>1</sub> e<sub>n</sub></div>
 \
-On pose n=n+1, et on obtient l’équation récurrente :\
+On pose n=n+1, et on obtient l’équation récurrente :
 <div align="center">y<sub>n</sub> = y<sub>n-1</sub> + a<sub>0</sub> e<sub>n</sub> - a<sub>1</sub> e<sub>n-1</sub></div>
 \
 Avec alpha = y et l’erreur = e\
@@ -226,11 +228,13 @@ On peut voir ces bâtonnets sur la figure 1.4.4.3 lorsque alpha = 0.5
 On n’a pas encore compris d’où ils viennent. 
 
 #### 1.4.4 - Vérification en simulation - comparaison Simulink/Keil
-Après avoir codé le correcteur numérique discret, c’était important de vérifier que l’on obtient bien le comportement souhaité de ce bloc. Sous Simulink on a donc isolé le bloc C(z) avec seulement un petit échelon en entrée d’amplitude 0.1, et un bloc saturateur et un scope en aval.\ 
+Après avoir codé le correcteur numérique discret, c’était important de vérifier que l’on obtient bien le comportement souhaité de ce bloc. Sous Simulink on a donc isolé le bloc C(z) avec seulement un petit échelon en entrée d’amplitude 0.1, et un bloc saturateur et un scope en aval.
+
 <img width="467" alt="corr_seul_simulink" src="https://user-images.githubusercontent.com/98895859/214157584-6565b0ba-fcc6-40b4-8675-bbae1b74e7dd.png"> \
 Figure 1.4.4.1 - Schéma bloc du correcteur seul sous simulink lors de la vérification du comportement du simulink vs celui obtenu avec Keil. 
-Le comportement prévu était le suivant:\ 
-![corr_seul_reponse_verif_keil_v5](https://user-images.githubusercontent.com/98895859/214157643-020cdf28-73b7-4ad5-8861-b46d40e02b7d.PNG)
+Le comportement prévu était le suivant:
+
+![corr_seul_reponse_verif_keil_v5](https://user-images.githubusercontent.com/98895859/214157643-020cdf28-73b7-4ad5-8861-b46d40e02b7d.PNG)\
 Figure 1.4.4.2 - Tracé de la réponse à un échelon de 0.1 du bloc correcteur sous Simulink, qui met en évidence le comportement d’intégrateur souhaité.
 
 Dans ce schéma on constate que le comportement observé était composé d’un premier step égale à K=tau_c/tau_i=0.077, suivi de petits pas en escalier qui monte (pense: intégrateur) jusqu’à l’obtention de alpha=0.5. Le temps que met l’intégrateur à monter jusqu’à alpha=0.5 depuis le premier pas K est ici égale au delta ΔT=12.5ms. 
@@ -251,7 +255,7 @@ Le système récupérateur d’énergie est relié au banc trottinette avec un s
 Finalement, on a relié deux sondes de l'oscilloscope pour visualiser les signaux que l’on envoie et l’on reçoit du système. Cela nous permettait de comprendre le comportement du système quand on appliquait des entrées différentes (sinus / créneaux / basse fréquence / haute fréquence)  
 <img width="597" alt="creneaux_sortie_degrad" src="https://user-images.githubusercontent.com/98895859/214158580-781ff2fb-260c-495f-93d1-50a1b95fb1a3.png">\
 Figure 1.4.5.2 - Observations sur l’oscilloscope lorsque l’on a mis un signal créneaux en entrée, basse fréquence (f=450mHz). On observe le phénomène de dégradation de la sortie à cause du long temps que met le système pour répondre. Le système n’arrive plus à accélérer, et on voit une dégradation du signal en sortie vers la fin du créneau/carré.\ 
-<img width="597" alt="creneaux_sortie_normale" src="https://user-images.githubusercontent.com/98895859/214158683-df0af708-6c94-4d80-b695-47fc588052b3.png">
+<img width="597" alt="creneaux_sortie_normale" src="https://user-images.githubusercontent.com/98895859/214158683-df0af708-6c94-4d80-b695-47fc588052b3.png">\
 Figure 1.4.5.3 - Observations sur l’oscilloscope lorsque l’on a mis un signal créneaux en entrée, à ≈ 1Hz, on voit que la sortie a à peu près la même amplitude que l’entrée, c'est-à-dire que l’on retrouve le gain de 0dB en basse fréquence.  
 <img width="597" alt="sinus_0707" src="https://user-images.githubusercontent.com/98895859/214158824-1bb18c96-53de-4b3c-b519-8bc5bb839c3d.png">\
 Figure 1.4.5.4 - Observations sur l’oscilloscope lorsque l’on a mis un sinus en entrée, sortie à 0,74 (presque 0,707…) lorsque l’on est près de la fréquence de coupure à 730Hz.  
