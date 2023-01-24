@@ -57,7 +57,7 @@ Il suffit maintenant d’exprimer les fonctions de transfert des différents blo
 - Le hacheur peut juste se traduire par un gain Khacheur  qui vaut 48 d’après la fiche technique. Cet élément permet à partir d’un rapport cyclique alpha, de fournir une tension continue. Cependant, si on analyse le spectre fréquentiel du signal généré entre +/- 24 Volts, la tension de la batterie, on peut voir la fondamental mais aussi des harmoniques (de 20kHz). Or, on aimerait garder uniquement la composante continue à 0Hz. Il faudrait donc rajouter un filtre passe bas pour éliminer les harmoniques. Cela n’est pas nécessaire dans notre cas car on attaque un moteur à courant continu en sortie qui est semblable à un filtre LR, un filtre passe bas avec une fréquence de coupure à 80Hz, ce qui permet de supprimer les harmoniques. La tension de sortie du hacheur UM est donc une tension continue avec une valeur de tension moyenne induite par alpha.
 - La fonction de transfert du moteur se traduit par un fonction de transfert du premier ordre : 
 <img width="495" alt="moteur" src="https://user-images.githubusercontent.com/98895859/214152198-3a25050f-af0e-4e92-8f3a-d91deb238811.png">
-Figure 1.1.2 - Schéma simplifié et calcul des caractéristiques du moteur\
+Figure 1.1.3 - Schéma simplifié et calcul des caractéristiques du moteur\
 On ne prend pas en compte la perturbation E(p) car on E(p) à une dynamique lente par rapport au moteur. Donc on considérera que les variables sont indépendantes. Pour étudier la stabilité on peut ne pas prendre en compte cette perturbation. C’est donc pour cela qu’elle n'apparaît pas dans les calculs.
 - Le capteur de courant, selon le document technique, correspond à un gain de K_courant = 0.1042. 
 - La fonction de transfert du bloc de conditionnement peut se calculer à partir du schéma électronique dans la documentation technique:
@@ -89,7 +89,8 @@ Maintenant, il nous faut aussi une erreur statique nulle en boucle fermée. Quel
 
 Si on a par exemple une marge de phase de 45 degrés à 200Hz on peut trouver un gain k tel que on arrive à avoir cette marge de phase pour la fréquence de transition que l’on veut, ici 400Hz. En effet un gain élevé shiftera la courbe de gain vers le haut et un gain faible à l’inverse la shiftera vers le bas. Cependant l'erreur statique ne sera pas nulle et ne pourra jamais l’être avec ce type de correcteur à moins d’avoir un gain immense, ce qui entraînerait des instabilités et ce n’est pas ce que l’on recherche. Ce correcteur n’est donc pas le bon.
 
-- L’intégrateur pur: C(p) = 1/p
+- L’intégrateur pur: 
+$$C(p) = frac{1}{p}$$
 
 Ce correcteur ajoute -20dB/décade à la courbe de gain. Cela permet d’avoir une erreur statique nulle, cependant cela fait descendre la phase de 90 degrés pour toute la courbe de phase et notre marge de phase est donc maintenant de 0 degré, ce qui n’est pas satisfaisant.  On ne peut pas non plus prendre ce correcteur pour notre système.
 
@@ -110,16 +111,16 @@ Ainsi, on peut facilement calculer tau_i:
 <img width="467" alt="calcul_tau_i" src="https://user-images.githubusercontent.com/98895859/214155051-01e8e633-ddf9-4d5f-883c-4e8ad0f84828.png">
 
 Nous avons donc tous les éléments pour calculer notre correcteur et faire les simulations sur Matlab et simulink !
-Version 1 : 
+#### Version 1 : 
 Dans notre première version du système bouclée avec simulink, on a la configuration suivante: 
 ![simulink_v1](https://user-images.githubusercontent.com/98895859/214155114-105d7a14-5a81-4e8c-afc0-a8962d262b8f.PNG)
 Figure 1.2.2 - Simulink système asservi version 1\
 ![reponse_echelon_v1](https://user-images.githubusercontent.com/98895859/214155154-caa3018c-f12e-4ddd-8cfb-2f9564ec0781.PNG)\
-Figure 1.2.3 - Simulink - réponse à un échelon d’amplitude 1.65\ 
+Figure 1.2.3 - Simulink - réponse à un échelon d’amplitude 1.65 
 ![erreur_v1](https://user-images.githubusercontent.com/98895859/214155225-bc41ce87-02f1-4660-b169-6833c3dd5168.PNG)\
 Figure 1.2.4 - Simulink - erreur du système - on voit bien qu’on a une erreur nulle après un certain temps\
 ![alpha_not_real_v1](https://user-images.githubusercontent.com/98895859/214155244-e284043b-6ad6-4229-8d06-e20aca19f88c.PNG)\
-Figure 1.2.5 - Simulink - Le signal alpha - le signal pwm qui est envoyé à l’issue du bloc correcteur du système. Ici on voit bien que le alpha dépasse à un moment les valeurs admises, car normalement alpha est censé être compris dans l’intervalle [-0.5; +0.5]. Le système essaie d’être commandé si rapidement que le correcteur essaie d’envoyer un signal pwm de rapport cyclique > 100% (à alpha=+0.5) qui n’a pas de sens physique.\
+Figure 1.2.5 - Simulink - Le signal alpha - le signal pwm qui est envoyé à l’issue du bloc correcteur du système. Ici on voit bien que le alpha dépasse à un moment les valeurs admises, car normalement alpha est censé être compris dans l’intervalle [-0.5; +0.5]. Le système essaie d’être commandé si rapidement que le correcteur essaie d’envoyer un signal pwm de rapport cyclique > 100% (à alpha=+0.5) qui n’a pas de sens physique.
 
 #### Version 2 : 
 ![simulink_v2_saturateur](https://user-images.githubusercontent.com/98895859/214155324-2243e825-0b6e-4b16-9112-925e26087405.PNG)
@@ -127,9 +128,9 @@ Figure 1.2.6 - Version 2 du système sous simulink - on fait évoluer notre syst
 ![reponse_echelon_depassement_de_saturation_v2](https://user-images.githubusercontent.com/98895859/214155359-d350e298-7887-4f5d-8a25-e6d32d837271.PNG)
 Figure 1.2.7 - La réponse à un échelon de 1.65 du système avec saturateur. On voit l’apparition du phénomène de dépassement lié à la saturation lorsque l’on essaie d’exciter un système plus rapidement que son slew rate.\
 ![erreur_avec_saturateur_v2](https://user-images.githubusercontent.com/98895859/214155365-9b7e009d-6fa9-4a61-9fba-e27a95a47e96.PNG)\
-Figure 1.2.8 - L’erreur pour la version 2 du système (avec saturateur)\ 
+Figure 1.2.8 - L’erreur pour la version 2 du système (avec saturateur)
 ![alpha_sature_v2](https://user-images.githubusercontent.com/98895859/214155374-c7617d3a-6216-4171-b35f-1e0c02fe7aef.PNG)\
-Figure 1.2.9 - L’alpha quand on ajoute un bloc de saturation à ±0.5.\ 
+Figure 1.2.9 - L’alpha quand on ajoute un bloc de saturation à ±0.5. 
 
 ### 1.3 - Passage au discret - Asservissement dans le domaine discret
 Lorsque l'on passe du continu vers le discret, on passe d'une représentation en continu comme ceci : 
@@ -146,6 +147,7 @@ $$a_1 = \frac{T_e-2\tau_c}{2\tau_i}$$
 Donc on obtient la fonction de transfert suivante pour C(z) :  
 $$C(z) = \frac{a_0 z - a_1}{z - 1}$$
 
+#### Version 3 : 
 ![simulink_v3_discret_w_color](https://user-images.githubusercontent.com/98895859/214155591-e20297d7-783b-4ab1-86af-8590f05813ed.PNG)
 Figure 1.3.1 - Simulink - Version 3 du système, on a enlevé le bloc correcteur continu de la version 2 et on a ajouté un bloc correcteur discret. Ici les couleurs correspondent aux différents domaines des signaux, c’est-à-dire que le noir est en continu, le rouge est en discret, et le bloc jaune correspond à un bloc qui convertit un signal discret en continu. On a choisi de rajouter le bloc échantillonneur Te en amont du bloc C_z afin de discrétiser avec la bonne période d’échantillonnage Te. 
 ![reponse_echelon_plus_petit_discret_v3](https://user-images.githubusercontent.com/98895859/214155651-dd6fbe22-cbde-428d-b6a5-ff83fea56cb5.PNG)
@@ -154,7 +156,7 @@ Figure 1.3.2 - Réponse à un échelon de 1.65 avec le correcteur discret. On re
 Figure 1.3.3 - L’erreur lorsque l’on passe en discret. 
 ![alpha_discret_v3](https://user-images.githubusercontent.com/98895859/214155739-be04db83-4f66-48a6-ad53-e1f572024de2.PNG)\
 Figure 1.3.4 - Le signal PWM de alpha lorsque le correcteur est discrétisé.\
-Version 4 et 5 : 
+#### Version 4 et 5 : 
 ![simulink_corr_seul_v5](https://user-images.githubusercontent.com/98895859/214155832-5f484c40-5854-45e9-9032-9b2973900720.PNG)
 Figure 1.3.5 - Simulink quand on souhaitait vérifier le bon comportement du correcteur discret avec le correcteur codé avec Keil. On excite le bloc correcteur avec un petit échelon d’entrée afin de mettre en évidence le K du premier pas de la réponse, qui est une des caractéristiques de notre correcteur PI.  
 ![corr_seul_reponse_verif_keil_v5](https://user-images.githubusercontent.com/98895859/214155863-7c65dc53-de1d-461f-989d-4e9000559881.PNG)
@@ -176,12 +178,11 @@ Afin de libérer les ressources du microcontrôleur, ainsi de faire intervenir p
 #### 1.4.1 - De la fonction de transfert en z vers l’équation récurrente du correcteur
 On a retrouvé l’équation récurrente pour le calcul de l’alpha de la manière suivante : 
 $$C(z) = \frac{Y(z)}{U(z)} = \frac{a_0 z - a_1}{z - 1}$$ 
-⇔ 
-$$ Y(z)[z - 1] = U(z)[a_0 z - a_1] $$ \
+$$Y(z)(z - 1) = U(z)(a_0 z - a_1) $$
 Avec la transformée inverse en z, on obtient:\
-$$ y_n+1 - y_n = a_0 e_n+1 - a_1 e_n $$\
+$$y<sub>n+1</sub> - y_n = a_0 e<sub>n+1</sub> - a_1 e_n $$
 On pose n=n+1, et on obtient l’équation récurrente :\
-⇔ $$ y_n = y_n-1 + a_0 e_n - a_1 e_n-1 $$\
+$$y_n = y<sub>n-1</sub> + a_0 e_n - a_1 e<sub>n-1</sub> $$
 Avec alpha = y et l’erreur = e\
 Cette fonction récurrente nous permet de calculer le nouveau alpha / nouveau rapport cyclique avec lequel on va commander le système à la sortie du bloc correcteur C(z) numérique. 
 #### 1.4.2 - Étapes de la conception du correcteur numérique
@@ -199,7 +200,7 @@ On ramene cette valeur à la plage de valeurs correspondante : Il faut multiplie
 5. Calcul de la nouvelle valeur analogique de alpha avec l’expression déduite de l’équation récurrente. L’alpha analogique signifie la sortie comprise entre [-0.5;+0.5].
 On utilise la formule déduite de l’équation récurrente:
 
-$$ alphaAnalogique_n = alphaAnalogique_[n-1] + a_0*erreur_n + a_1*erreur_[n-1]$$
+$$ alphaAnalogique_n = alphaAnalogique<sub>n-1</sub> + a_0*erreur_n + a_1*erreur<sub>n-1</sub>$$
 
 Ici, a0 et a1 correspondent aux valeurs des coefficients que l’on a calculés pour la fonction de transfert en z, et sont exprimés ci-dessous : 
 
