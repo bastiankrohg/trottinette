@@ -89,7 +89,7 @@ Maintenant, il nous faut aussi une erreur statique nulle en boucle fermée. Quel
 
 Si on a par exemple une marge de phase de 45 degrés à 200Hz on peut trouver un gain k tel que on arrive à avoir cette marge de phase pour la fréquence de transition que l’on veut, ici 400Hz. En effet un gain élevé shiftera la courbe de gain vers le haut et un gain faible à l’inverse la shiftera vers le bas. Cependant l'erreur statique ne sera pas nulle et ne pourra jamais l’être avec ce type de correcteur à moins d’avoir un gain immense, ce qui entraînerait des instabilités et ce n’est pas ce que l’on recherche. Ce correcteur n’est donc pas le bon.
 
-- L’intégrateur pur: C(p) = 1p
+- L’intégrateur pur: C(p) = 1/p
 
 Ce correcteur ajoute -20dB/décade à la courbe de gain. Cela permet d’avoir une erreur statique nulle, cependant cela fait descendre la phase de 90 degrés pour toute la courbe de phase et notre marge de phase est donc maintenant de 0 degré, ce qui n’est pas satisfaisant.  On ne peut pas non plus prendre ce correcteur pour notre système.
 
@@ -104,7 +104,7 @@ Ce correcteur est donc parfait pour nos besoins. Il suffit de trouver les diffé
 - La première approche consiste à compenser le pôle du moteur (pôle dominant), ce qui simplifie l’équation. De plus, comme on se place aux alentours de la fréquence de transition qui vaut 400Hz, on peut négliger le pôle qui se trouve à 30kHz car sa dynamique n’entre pas en jeu ici. Il nous reste une expression simple dans laquelle il nous suffit de calculer K, le gain total du système et de trouver tau_i.
 - La deuxième est celle sans compensation de pôle. Dans ce cas l’équation est bien plus fastidieuse et bien plus compliquée à résoudre pour trouver tau_i. Cependant, nous pouvons faire des simplifications car on travaille autour d’une fréquence particulière et ainsi l’équation est bien plus rapide à résoudre.
 
-Dans ce BE, nous avons choisi d’appliquer la compensation de pôle. Nous allons donc compenser le pôle du moteur (tau' = 0.0020) et nous avons donc cette équation à résoudre:
+Dans ce BE, nous avons choisi d’appliquer la compensation de pôle. Nous allons donc compenser le pôle du moteur (tau' = 0.0020) et nous avons donc cette équation à résoudre:\
 <img width="553" alt="formule_K_glob" src="https://user-images.githubusercontent.com/98895859/214154885-238db919-0137-4096-bd9f-d7431f168ee5.png">\
 Ainsi, on peut facilement calculer tau_i:
 <img width="467" alt="calcul_tau_i" src="https://user-images.githubusercontent.com/98895859/214155051-01e8e633-ddf9-4d5f-883c-4e8ad0f84828.png">
@@ -114,20 +114,21 @@ Version 1 :
 Dans notre première version du système bouclée avec simulink, on a la configuration suivante: 
 ![simulink_v1](https://user-images.githubusercontent.com/98895859/214155114-105d7a14-5a81-4e8c-afc0-a8962d262b8f.PNG)
 Figure 1.2.2 - Simulink système asservi version 1\
-![reponse_echelon_v1](https://user-images.githubusercontent.com/98895859/214155154-caa3018c-f12e-4ddd-8cfb-2f9564ec0781.PNG)
+![reponse_echelon_v1](https://user-images.githubusercontent.com/98895859/214155154-caa3018c-f12e-4ddd-8cfb-2f9564ec0781.PNG)\
 Figure 1.2.3 - Simulink - réponse à un échelon d’amplitude 1.65\ 
-![erreur_v1](https://user-images.githubusercontent.com/98895859/214155225-bc41ce87-02f1-4660-b169-6833c3dd5168.PNG)
+![erreur_v1](https://user-images.githubusercontent.com/98895859/214155225-bc41ce87-02f1-4660-b169-6833c3dd5168.PNG)\
 Figure 1.2.4 - Simulink - erreur du système - on voit bien qu’on a une erreur nulle après un certain temps\
-![alpha_not_real_v1](https://user-images.githubusercontent.com/98895859/214155244-e284043b-6ad6-4229-8d06-e20aca19f88c.PNG)
+![alpha_not_real_v1](https://user-images.githubusercontent.com/98895859/214155244-e284043b-6ad6-4229-8d06-e20aca19f88c.PNG)\
 Figure 1.2.5 - Simulink - Le signal alpha - le signal pwm qui est envoyé à l’issue du bloc correcteur du système. Ici on voit bien que le alpha dépasse à un moment les valeurs admises, car normalement alpha est censé être compris dans l’intervalle [-0.5; +0.5]. Le système essaie d’être commandé si rapidement que le correcteur essaie d’envoyer un signal pwm de rapport cyclique > 100% (à alpha=+0.5) qui n’a pas de sens physique.\
-Version 2 : 
+
+#### Version 2 : 
 ![simulink_v2_saturateur](https://user-images.githubusercontent.com/98895859/214155324-2243e825-0b6e-4b16-9112-925e26087405.PNG)
 Figure 1.2.6 - Version 2 du système sous simulink - on fait évoluer notre système avec un bloc saturateur qui fait que l’alpha est à nouveau compris dans l’intervalle [-0.5; +0.5] afin d’assurer que le signal PWM de alpha ait un sens physique, qu’il ne dépasse pas ±100%. 
 ![reponse_echelon_depassement_de_saturation_v2](https://user-images.githubusercontent.com/98895859/214155359-d350e298-7887-4f5d-8a25-e6d32d837271.PNG)
 Figure 1.2.7 - La réponse à un échelon de 1.65 du système avec saturateur. On voit l’apparition du phénomène de dépassement lié à la saturation lorsque l’on essaie d’exciter un système plus rapidement que son slew rate.\
-![erreur_avec_saturateur_v2](https://user-images.githubusercontent.com/98895859/214155365-9b7e009d-6fa9-4a61-9fba-e27a95a47e96.PNG)
+![erreur_avec_saturateur_v2](https://user-images.githubusercontent.com/98895859/214155365-9b7e009d-6fa9-4a61-9fba-e27a95a47e96.PNG)\
 Figure 1.2.8 - L’erreur pour la version 2 du système (avec saturateur)\ 
-![alpha_sature_v2](https://user-images.githubusercontent.com/98895859/214155374-c7617d3a-6216-4171-b35f-1e0c02fe7aef.PNG)
+![alpha_sature_v2](https://user-images.githubusercontent.com/98895859/214155374-c7617d3a-6216-4171-b35f-1e0c02fe7aef.PNG)\
 Figure 1.2.9 - L’alpha quand on ajoute un bloc de saturation à ±0.5.\ 
 
 ### 1.3 - Passage au discret - Asservissement dans le domaine discret
@@ -146,16 +147,16 @@ Donc on obtient la fonction de transfert suivante pour C(z) :
 $$C(z) = \frac{a_0 z - a_1}{z - 1}$$
 
 ![simulink_v3_discret_w_color](https://user-images.githubusercontent.com/98895859/214155591-e20297d7-783b-4ab1-86af-8590f05813ed.PNG)
-Figure 1.3.1 - Simulink - Version 3 du système, on a enlevé le bloc correcteur continu de la version 2 et on a ajouté un bloc correcteur discret. Ici les couleurs correspondent aux différents domaines des signaux, c’est-à-dire que le noir est en continu, le rouge est en discret, et le bloc jaune correspond à un bloc qui convertit un signal discret en continu. On a choisi de rajouter le bloc échantillonneur Te en amont du bloc C_z afin de discrétiser avec la bonne période d’échantillonnage Te.\ 
+Figure 1.3.1 - Simulink - Version 3 du système, on a enlevé le bloc correcteur continu de la version 2 et on a ajouté un bloc correcteur discret. Ici les couleurs correspondent aux différents domaines des signaux, c’est-à-dire que le noir est en continu, le rouge est en discret, et le bloc jaune correspond à un bloc qui convertit un signal discret en continu. On a choisi de rajouter le bloc échantillonneur Te en amont du bloc C_z afin de discrétiser avec la bonne période d’échantillonnage Te. 
 ![reponse_echelon_plus_petit_discret_v3](https://user-images.githubusercontent.com/98895859/214155651-dd6fbe22-cbde-428d-b6a5-ff83fea56cb5.PNG)
-Figure 1.3.2 - Réponse à un échelon de 1.65 avec le correcteur discret. On remarque que le phénomène de dépassement lié à la saturation y est toujours.\  
-![erreur_continue_avec_C_z_v3](https://user-images.githubusercontent.com/98895859/214155686-727b3ebb-618d-42db-9d96-8b45034d32f0.PNG)
-Figure 1.3.3 - L’erreur lorsque l’on passe en discret.\ 
-![alpha_discret_v3](https://user-images.githubusercontent.com/98895859/214155739-be04db83-4f66-48a6-ad53-e1f572024de2.PNG)
+Figure 1.3.2 - Réponse à un échelon de 1.65 avec le correcteur discret. On remarque que le phénomène de dépassement lié à la saturation y est toujours.  
+![erreur_continue_avec_C_z_v3](https://user-images.githubusercontent.com/98895859/214155686-727b3ebb-618d-42db-9d96-8b45034d32f0.PNG)\
+Figure 1.3.3 - L’erreur lorsque l’on passe en discret. 
+![alpha_discret_v3](https://user-images.githubusercontent.com/98895859/214155739-be04db83-4f66-48a6-ad53-e1f572024de2.PNG)\
 Figure 1.3.4 - Le signal PWM de alpha lorsque le correcteur est discrétisé.\
 Version 4 et 5 : 
 ![simulink_corr_seul_v5](https://user-images.githubusercontent.com/98895859/214155832-5f484c40-5854-45e9-9032-9b2973900720.PNG)
-Figure 1.3.5 - Simulink quand on souhaitait vérifier le bon comportement du correcteur discret avec le correcteur codé avec Keil. On excite le bloc correcteur avec un petit échelon d’entrée afin de mettre en évidence le K du premier pas de la réponse, qui est une des caractéristiques de notre correcteur PI.\  
+Figure 1.3.5 - Simulink quand on souhaitait vérifier le bon comportement du correcteur discret avec le correcteur codé avec Keil. On excite le bloc correcteur avec un petit échelon d’entrée afin de mettre en évidence le K du premier pas de la réponse, qui est une des caractéristiques de notre correcteur PI.  
 ![corr_seul_reponse_verif_keil_v5](https://user-images.githubusercontent.com/98895859/214155863-7c65dc53-de1d-461f-989d-4e9000559881.PNG)
 Figure 1.3.6 - Réponse à un échelon du bloc correcteur seul pour vérifier le comportement dans keil par rapport à celui dans simulink. Ici on voit un premier pas de K=0.077, avant de monter jusqu’à +0.5 après 12.5ms. On s’arrête à alpha=0.5 grâce au bloc saturateur en aval du correcteur. Ce comportement va servir de test pour notre correcteur numérique afin qu’on puisse tester le bon fonctionnement du correcteur avant de le câbler physiquement. Cette vérification évite d’asservir le banc de trottinette avec un comportement qui n’est pas prévu qui peut engendrer des conséquences sur le matériel ou peut mettre l’utilisateur en risque.
 
@@ -225,10 +226,10 @@ Après avoir codé le correcteur numérique discret, c’était important de vé
 Figure 1.4.4.1 - Schéma bloc du correcteur seul sous simulink lors de la vérification du comportement du simulink vs celui obtenu avec Keil. 
 Le comportement prévu était le suivant: 
 ![corr_seul_reponse_verif_keil_v5](https://user-images.githubusercontent.com/98895859/214157643-020cdf28-73b7-4ad5-8861-b46d40e02b7d.PNG)
-Figure 1.4.4.2 - Tracé de la réponse à un échelon de 0.1 du bloc correcteur sous Simulink, qui met en évidence le comportement d’intégrateur souhaité.\
+Figure 1.4.4.2 - Tracé de la réponse à un échelon de 0.1 du bloc correcteur sous Simulink, qui met en évidence le comportement d’intégrateur souhaité.
 
 Dans ce schéma on constate que le comportement observé était composé d’un premier step égale à K=tau_c/tau_i=0.077, suivi de petits pas en escalier qui monte (pense: intégrateur) jusqu’à l’obtention de alpha=0.5. Le temps que met l’intégrateur à monter jusqu’à alpha=0.5 depuis le premier pas K est ici égale au delta ΔT=12.5ms. 
-Il fallait vérifier que ces valeurs, et donc le comportement du bloc correcteur (si on excite avec la même entrée) était exactement la même sous Keil et Simulink. On a commencé par réécrire l’expression de C(p), qui nous donnait une idée de ce à quoi on s’attendait, avant de faire une application numérique. En regardant les courbes obtenues en simulation avec Keil et Simulink, les valeurs de K et tau collent bien avec notre calcul théorique. On obtient bien le même K=0.077 (premier pas) et temps de réponse de alpha=K=0.077 jusqu’à alpha=0.5, ΔT=12.5ms.\
+Il fallait vérifier que ces valeurs, et donc le comportement du bloc correcteur (si on excite avec la même entrée) était exactement la même sous Keil et Simulink. On a commencé par réécrire l’expression de C(p), qui nous donnait une idée de ce à quoi on s’attendait, avant de faire une application numérique. En regardant les courbes obtenues en simulation avec Keil et Simulink, les valeurs de K et tau collent bien avec notre calcul théorique. On obtient bien le même K=0.077 (premier pas) et temps de réponse de alpha=K=0.077 jusqu’à alpha=0.5, ΔT=12.5ms.
 
 Réécriture de l’expression du correcteur PI : 
 $$C(p) = \frac{1 + tau_c p}{tau_i p} = \frac{K}{p} + \frac{tau_c}{tau_i}$$
@@ -236,7 +237,7 @@ $$C(p) = \frac{1 + tau_c p}{tau_i p} = \frac{K}{p} + \frac{tau_c}{tau_i}$$
 Figure 1.4.4.3 - Tracé de la réponse à un échelon de 0.1 du bloc correcteur sous keil
 #### 1.4.5 - Implémentation et essais du correcteur
 Avant de tester la carte de puissance que l’on a conçue, on a vérifié que le banc trottinette fonctionnait. Pour cela on a branché le banc à une carte de puissance analogique qui a été conçue préalablement. Quand on a vu que cette carte et donc le correcteur fonctionnait comme prévu, c’est-à-dire qu’on réussissait à commander la trottinette vers l’avant, l’arrière, et arriver à maintenir une couple nulle. On pouvait donc passer à l’étape de test du correcteur numérique en réel.
-Lors de l’implémentation du correcteur, on a commencé par configurer la carte de contrôle de puissance contenant la carte STM32. Ensuite, on a branché un générateur basse-fréquence à l’entrée In de la carte. De plus, on a relié les deux PWM en opposition de phase au banc trottinette avec deux fils blancs. On a également récupéré la tension Vcourant, venant du banc trottinette (à l’issue du capteur courant après conditionnement par le bloc de filtre F(p)), et l’a branché à la carte de contrôle de puissance à l’entrée du courant. On a relié la carte à la masse du banc trottinette, et on a repéré la commande du potentiomètre au niveau de l’entrée 3V3 (même endroit que le GBF) permettant de régler la consigne d’entrée.
+Lors de l’implémentation du correcteur, on a commencé par configurer la carte de contrôle de puissance contenant la carte STM32. Ensuite, on a branché un générateur basse-fréquence à l’entrée In de la carte. De plus, on a relié les deux PWM en opposition de phase au banc trottinette avec deux fils blancs. On a également récupéré la tension Vcourant, venant du banc trottinette (à l’issue du capteur courant après conditionnement par le bloc de filtre F(p)), et l’a branché à la carte de contrôle de puissance à l’entrée du courant. On a relié la carte à la masse du banc trottinette, et on a repéré la commande du potentiomètre au niveau de l’entrée 3V3 (même endroit que le GBF) permettant de régler la consigne d’entrée.\
 <img width="484" alt="banc_cable" src="https://user-images.githubusercontent.com/98895859/214158448-a79b73e9-ee80-4133-a023-6c5b4527e1d4.png">\
 Figure 1.4.5.1 - Banc trottinette câblé avec la carte de puissance codée. 
 
