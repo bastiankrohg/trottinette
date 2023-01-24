@@ -180,9 +180,11 @@ On a retrouvé l’équation récurrente pour le calcul de l’alpha de la mani�
 $$C(z) = \frac{Y(z)}{U(z)} = \frac{a_0 z - a_1}{z - 1}$$ 
 $$Y(z)(z - 1) = U(z)(a_0 z - a_1) $$
 Avec la transformée inverse en z, on obtient:\
-$$y<sub>n+1</sub> - y_n = a_0 e<sub>n+1</sub> - a_1 e_n $$
+y<sub>n+1</sub> - y<sub>n</sub> = a<sub>0</sub> e<sub>n+1</sub> - a<sub>1</sub> e<sub>n</sub>
+\
 On pose n=n+1, et on obtient l’équation récurrente :\
-$$y_n = y<sub>n-1</sub> + a_0 e_n - a_1 e<sub>n-1</sub> $$
+y<sub>n</sub> = y<sub>n-1</sub> + a<sub>0</sub> e<sub>n</sub> - a<sub>1</sub> e<sub>n-1</sub>
+\
 Avec alpha = y et l’erreur = e\
 Cette fonction récurrente nous permet de calculer le nouveau alpha / nouveau rapport cyclique avec lequel on va commander le système à la sortie du bloc correcteur C(z) numérique. 
 #### 1.4.2 - Étapes de la conception du correcteur numérique
@@ -200,7 +202,7 @@ On ramene cette valeur à la plage de valeurs correspondante : Il faut multiplie
 5. Calcul de la nouvelle valeur analogique de alpha avec l’expression déduite de l’équation récurrente. L’alpha analogique signifie la sortie comprise entre [-0.5;+0.5].
 On utilise la formule déduite de l’équation récurrente:
 
-$$ alphaAnalogique_n = alphaAnalogique<sub>n-1</sub> + a_0*erreur_n + a_1*erreur<sub>n-1</sub>$$
+alphaAnalogique_n = alphaAnalogique<sub>n-1</sub> + a_0*erreur_n + a_1*erreur<sub>n-1</sub>
 
 Ici, a0 et a1 correspondent aux valeurs des coefficients que l’on a calculés pour la fonction de transfert en z, et sont exprimés ci-dessous : 
 
