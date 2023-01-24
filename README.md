@@ -202,7 +202,7 @@ On ramene cette valeur à la plage de valeurs correspondante : Il faut multiplie
 5. Calcul de la nouvelle valeur analogique de alpha avec l’expression déduite de l’équation récurrente. L’alpha analogique signifie la sortie comprise entre [-0.5;+0.5].
 On utilise la formule déduite de l’équation récurrente:
 
-alphaAnalogique_n = alphaAnalogique<sub>n-1</sub> + a_0*erreur_n + a_1*erreur<sub>n-1</sub>
+alphaAnalogique<sub>n</sub> = alphaAnalogique<sub>n-1</sub> + a<sub>0</sub> erreur<sub>n</sub> + a<sub>1</sub> erreur<sub>n-1</sub>
 
 Ici, a0 et a1 correspondent aux valeurs des coefficients que l’on a calculés pour la fonction de transfert en z, et sont exprimés ci-dessous : 
 
