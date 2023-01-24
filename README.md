@@ -38,8 +38,8 @@ Ce BE comprend beaucoup de concepts qu’il nous faut comprendre pour pouvoir r�
 
 ### 1.1 - Premier approche et prise en main du système
 Tout d’abord il faut avoir une vue d’ensemble du système et comprendre de quels éléments il est composé et comment ces derniers interagissent entre eux. Pour cela nous avons le dossier technique à notre disposition. Nous pouvons commencer par analyser le diagramme en bloc qui indique comment les blocs de la commande électronique sont reliés les uns aux autres. Cela nous permet d’identifier les différents blocs que nous aurons dans le schéma bloc du système.
-<img width="616" alt="diagramme_cmd_elec" src="https://user-images.githubusercontent.com/98895859/214151608-f5abf345-e0fd-42fd-9824-a49e8d0ae07c.png">
-Figure 1.1.1 - Diagramme en bloc de la commande électronique
+<img width="616" alt="diagramme_cmd_elec" src="https://user-images.githubusercontent.com/98895859/214151608-f5abf345-e0fd-42fd-9824-a49e8d0ae07c.png">\
+Figure 1.1.1 - Diagramme en bloc de la commande électronique\
 Il a donc les différents blocs:\
 Le hacheur : H(p)\
 Le moteur M(p)\
@@ -58,11 +58,11 @@ Il suffit maintenant d’exprimer les fonctions de transfert des différents blo
 - La fonction de transfert du moteur se traduit par un fonction de transfert du premier ordre : 
 <img width="495" alt="moteur" src="https://user-images.githubusercontent.com/98895859/214152198-3a25050f-af0e-4e92-8f3a-d91deb238811.png">
 Figure 1.1.3 - Schéma simplifié et calcul des caractéristiques du moteur\
-On ne prend pas en compte la perturbation E(p) car on E(p) à une dynamique lente par rapport au moteur. Donc on considérera que les variables sont indépendantes. Pour étudier la stabilité on peut ne pas prendre en compte cette perturbation. C’est donc pour cela qu’elle n'apparaît pas dans les calculs.
+On ne prend pas en compte la perturbation E(p) car on E(p) à une dynamique lente par rapport au moteur. Donc on considérera que les variables sont indépendantes. Pour étudier la stabilité on peut ne pas prendre en compte cette perturbation. C’est donc pour cela qu’elle n'apparaît pas dans les calculs.\
 - Le capteur de courant, selon le document technique, correspond à un gain de K_courant = 0.1042. 
 - La fonction de transfert du bloc de conditionnement peut se calculer à partir du schéma électronique dans la documentation technique:
 <img width="615" alt="Schema_elec " src="https://user-images.githubusercontent.com/98895859/214152431-1a18ccbc-a2a6-400a-9eac-6cced1587b62.png">
-Figure 1.1.3 - Schéma électronique du filtre F(p) de conditionnement\
+Figure 1.1.4 - Schéma électronique du filtre F(p) de conditionnement\
 Pour analyser ce schéma électronique on peut d’abord analyser la partie statique et ensuite la partie dynamique.
 
 La partie statique servira à contrôler le gain statique du montage et la partie dynamique à calculer la fonction de transfert dynamique du système. Après calcul, on obtient la fonction de transfert finale suivante:\
@@ -90,7 +90,7 @@ Maintenant, il nous faut aussi une erreur statique nulle en boucle fermée. Quel
 Si on a par exemple une marge de phase de 45 degrés à 200Hz on peut trouver un gain k tel que on arrive à avoir cette marge de phase pour la fréquence de transition que l’on veut, ici 400Hz. En effet un gain élevé shiftera la courbe de gain vers le haut et un gain faible à l’inverse la shiftera vers le bas. Cependant l'erreur statique ne sera pas nulle et ne pourra jamais l’être avec ce type de correcteur à moins d’avoir un gain immense, ce qui entraînerait des instabilités et ce n’est pas ce que l’on recherche. Ce correcteur n’est donc pas le bon.
 
 - L’intégrateur pur: 
-$$C(p) = frac{1}{p}$$
+$$C(p) = \frac{1}{p}$$
 
 Ce correcteur ajoute -20dB/décade à la courbe de gain. Cela permet d’avoir une erreur statique nulle, cependant cela fait descendre la phase de 90 degrés pour toute la courbe de phase et notre marge de phase est donc maintenant de 0 degré, ce qui n’est pas satisfaisant.  On ne peut pas non plus prendre ce correcteur pour notre système.
 
@@ -107,13 +107,13 @@ Ce correcteur est donc parfait pour nos besoins. Il suffit de trouver les diffé
 
 Dans ce BE, nous avons choisi d’appliquer la compensation de pôle. Nous allons donc compenser le pôle du moteur (tau' = 0.0020) et nous avons donc cette équation à résoudre:\
 <img width="553" alt="formule_K_glob" src="https://user-images.githubusercontent.com/98895859/214154885-238db919-0137-4096-bd9f-d7431f168ee5.png">\
-Ainsi, on peut facilement calculer tau_i:
-<img width="467" alt="calcul_tau_i" src="https://user-images.githubusercontent.com/98895859/214155051-01e8e633-ddf9-4d5f-883c-4e8ad0f84828.png">
+Ainsi, on peut facilement calculer tau_i:\
+<img width="467" alt="calcul_tau_i" src="https://user-images.githubusercontent.com/98895859/214155051-01e8e633-ddf9-4d5f-883c-4e8ad0f84828.png">\
 
 Nous avons donc tous les éléments pour calculer notre correcteur et faire les simulations sur Matlab et simulink !
 #### Version 1 : 
 Dans notre première version du système bouclée avec simulink, on a la configuration suivante: 
-![simulink_v1](https://user-images.githubusercontent.com/98895859/214155114-105d7a14-5a81-4e8c-afc0-a8962d262b8f.PNG)
+![simulink_v1](https://user-images.githubusercontent.com/98895859/214155114-105d7a14-5a81-4e8c-afc0-a8962d262b8f.PNG)\
 Figure 1.2.2 - Simulink système asservi version 1\
 ![reponse_echelon_v1](https://user-images.githubusercontent.com/98895859/214155154-caa3018c-f12e-4ddd-8cfb-2f9564ec0781.PNG)\
 Figure 1.2.3 - Simulink - réponse à un échelon d’amplitude 1.65 
@@ -125,7 +125,7 @@ Figure 1.2.5 - Simulink - Le signal alpha - le signal pwm qui est envoyé à l�
 #### Version 2 : 
 ![simulink_v2_saturateur](https://user-images.githubusercontent.com/98895859/214155324-2243e825-0b6e-4b16-9112-925e26087405.PNG)
 Figure 1.2.6 - Version 2 du système sous simulink - on fait évoluer notre système avec un bloc saturateur qui fait que l’alpha est à nouveau compris dans l’intervalle [-0.5; +0.5] afin d’assurer que le signal PWM de alpha ait un sens physique, qu’il ne dépasse pas ±100%. 
-![reponse_echelon_depassement_de_saturation_v2](https://user-images.githubusercontent.com/98895859/214155359-d350e298-7887-4f5d-8a25-e6d32d837271.PNG)
+![reponse_echelon_depassement_de_saturation_v2](https://user-images.githubusercontent.com/98895859/214155359-d350e298-7887-4f5d-8a25-e6d32d837271.PNG)\
 Figure 1.2.7 - La réponse à un échelon de 1.65 du système avec saturateur. On voit l’apparition du phénomène de dépassement lié à la saturation lorsque l’on essaie d’exciter un système plus rapidement que son slew rate.\
 ![erreur_avec_saturateur_v2](https://user-images.githubusercontent.com/98895859/214155365-9b7e009d-6fa9-4a61-9fba-e27a95a47e96.PNG)\
 Figure 1.2.8 - L’erreur pour la version 2 du système (avec saturateur)
@@ -140,26 +140,27 @@ $$C(z) = \frac{a_0 z - a_1}{z - 1}$$
 On fait cette passage en gardant tous les propriétés du système comme les pôles et les zéros grâce à la méthode de Tustin, autrement dit la transformée bilinéaire. Pour cette transformée, on pose : 
 $$p = \frac{2}{T_e} \frac{z - 1}{z + 1}$$
 et on insère l'expression de p dans l'expression de C(p) afin de retrouver la fonction de transfert de C discrétisée, maintenant avec le variable z : 
-En discret : 
+
 - On pose a0 et a1 tels que :  
 $$a_0 = \frac{T_e+2\tau_c}{2\tau_i}$$
 $$a_1 = \frac{T_e-2\tau_c}{2\tau_i}$$
+
 Donc on obtient la fonction de transfert suivante pour C(z) :  
 $$C(z) = \frac{a_0 z - a_1}{z - 1}$$
 
 #### Version 3 : 
 ![simulink_v3_discret_w_color](https://user-images.githubusercontent.com/98895859/214155591-e20297d7-783b-4ab1-86af-8590f05813ed.PNG)
 Figure 1.3.1 - Simulink - Version 3 du système, on a enlevé le bloc correcteur continu de la version 2 et on a ajouté un bloc correcteur discret. Ici les couleurs correspondent aux différents domaines des signaux, c’est-à-dire que le noir est en continu, le rouge est en discret, et le bloc jaune correspond à un bloc qui convertit un signal discret en continu. On a choisi de rajouter le bloc échantillonneur Te en amont du bloc C_z afin de discrétiser avec la bonne période d’échantillonnage Te. 
-![reponse_echelon_plus_petit_discret_v3](https://user-images.githubusercontent.com/98895859/214155651-dd6fbe22-cbde-428d-b6a5-ff83fea56cb5.PNG)
+![reponse_echelon_plus_petit_discret_v3](https://user-images.githubusercontent.com/98895859/214155651-dd6fbe22-cbde-428d-b6a5-ff83fea56cb5.PNG)\
 Figure 1.3.2 - Réponse à un échelon de 1.65 avec le correcteur discret. On remarque que le phénomène de dépassement lié à la saturation y est toujours.  
 ![erreur_continue_avec_C_z_v3](https://user-images.githubusercontent.com/98895859/214155686-727b3ebb-618d-42db-9d96-8b45034d32f0.PNG)\
-Figure 1.3.3 - L’erreur lorsque l’on passe en discret. 
+Figure 1.3.3 - L’erreur lorsque l’on passe en discret.\ 
 ![alpha_discret_v3](https://user-images.githubusercontent.com/98895859/214155739-be04db83-4f66-48a6-ad53-e1f572024de2.PNG)\
 Figure 1.3.4 - Le signal PWM de alpha lorsque le correcteur est discrétisé.\
 #### Version 4 et 5 : 
 ![simulink_corr_seul_v5](https://user-images.githubusercontent.com/98895859/214155832-5f484c40-5854-45e9-9032-9b2973900720.PNG)
 Figure 1.3.5 - Simulink quand on souhaitait vérifier le bon comportement du correcteur discret avec le correcteur codé avec Keil. On excite le bloc correcteur avec un petit échelon d’entrée afin de mettre en évidence le K du premier pas de la réponse, qui est une des caractéristiques de notre correcteur PI.  
-![corr_seul_reponse_verif_keil_v5](https://user-images.githubusercontent.com/98895859/214155863-7c65dc53-de1d-461f-989d-4e9000559881.PNG)
+![corr_seul_reponse_verif_keil_v5](https://user-images.githubusercontent.com/98895859/214155863-7c65dc53-de1d-461f-989d-4e9000559881.PNG)\
 Figure 1.3.6 - Réponse à un échelon du bloc correcteur seul pour vérifier le comportement dans keil par rapport à celui dans simulink. Ici on voit un premier pas de K=0.077, avant de monter jusqu’à +0.5 après 12.5ms. On s’arrête à alpha=0.5 grâce au bloc saturateur en aval du correcteur. Ce comportement va servir de test pour notre correcteur numérique afin qu’on puisse tester le bon fonctionnement du correcteur avant de le câbler physiquement. Cette vérification évite d’asservir le banc de trottinette avec un comportement qui n’est pas prévu qui peut engendrer des conséquences sur le matériel ou peut mettre l’utilisateur en risque.
 
 
@@ -180,10 +181,10 @@ On a retrouvé l’équation récurrente pour le calcul de l’alpha de la mani�
 $$C(z) = \frac{Y(z)}{U(z)} = \frac{a_0 z - a_1}{z - 1}$$ 
 $$Y(z)(z - 1) = U(z)(a_0 z - a_1) $$
 Avec la transformée inverse en z, on obtient:\
-y<sub>n+1</sub> - y<sub>n</sub> = a<sub>0</sub> e<sub>n+1</sub> - a<sub>1</sub> e<sub>n</sub>
+<div align="center">y<sub>n+1</sub> - y<sub>n</sub> = a<sub>0</sub> e<sub>n+1</sub> - a<sub>1</sub> e<sub>n</sub></div>
 \
 On pose n=n+1, et on obtient l’équation récurrente :\
-y<sub>n</sub> = y<sub>n-1</sub> + a<sub>0</sub> e<sub>n</sub> - a<sub>1</sub> e<sub>n-1</sub>
+<div align="center">y<sub>n</sub> = y<sub>n-1</sub> + a<sub>0</sub> e<sub>n</sub> - a<sub>1</sub> e<sub>n-1</sub></div>
 \
 Avec alpha = y et l’erreur = e\
 Cette fonction récurrente nous permet de calculer le nouveau alpha / nouveau rapport cyclique avec lequel on va commander le système à la sortie du bloc correcteur C(z) numérique. 
@@ -224,10 +225,10 @@ On peut voir ces bâtonnets sur la figure 1.4.4.3 lorsque alpha = 0.5
 On n’a pas encore compris d’où ils viennent. 
 
 #### 1.4.4 - Vérification en simulation - comparaison Simulink/Keil
-Après avoir codé le correcteur numérique discret, c’était important de vérifier que l’on obtient bien le comportement souhaité de ce bloc. Sous Simulink on a donc isolé le bloc C(z) avec seulement un petit échelon en entrée d’amplitude 0.1, et un bloc saturateur et un scope en aval. 
+Après avoir codé le correcteur numérique discret, c’était important de vérifier que l’on obtient bien le comportement souhaité de ce bloc. Sous Simulink on a donc isolé le bloc C(z) avec seulement un petit échelon en entrée d’amplitude 0.1, et un bloc saturateur et un scope en aval.\ 
 <img width="467" alt="corr_seul_simulink" src="https://user-images.githubusercontent.com/98895859/214157584-6565b0ba-fcc6-40b4-8675-bbae1b74e7dd.png"> \
 Figure 1.4.4.1 - Schéma bloc du correcteur seul sous simulink lors de la vérification du comportement du simulink vs celui obtenu avec Keil. 
-Le comportement prévu était le suivant: 
+Le comportement prévu était le suivant:\ 
 ![corr_seul_reponse_verif_keil_v5](https://user-images.githubusercontent.com/98895859/214157643-020cdf28-73b7-4ad5-8861-b46d40e02b7d.PNG)
 Figure 1.4.4.2 - Tracé de la réponse à un échelon de 0.1 du bloc correcteur sous Simulink, qui met en évidence le comportement d’intégrateur souhaité.
 
@@ -236,7 +237,7 @@ Il fallait vérifier que ces valeurs, et donc le comportement du bloc correcteur
 
 Réécriture de l’expression du correcteur PI : 
 $$C(p) = \frac{1 + tau_c p}{tau_i p} = \frac{K}{p} + \frac{tau_c}{tau_i}$$
-<img width="632" alt="keil_simu" src="https://user-images.githubusercontent.com/98895859/214158176-e94e6e2d-6a89-4652-95c5-05220d4160f5.png">
+<img width="632" alt="keil_simu" src="https://user-images.githubusercontent.com/98895859/214158176-e94e6e2d-6a89-4652-95c5-05220d4160f5.png">\
 Figure 1.4.4.3 - Tracé de la réponse à un échelon de 0.1 du bloc correcteur sous keil
 #### 1.4.5 - Implémentation et essais du correcteur
 Avant de tester la carte de puissance que l’on a conçue, on a vérifié que le banc trottinette fonctionnait. Pour cela on a branché le banc à une carte de puissance analogique qui a été conçue préalablement. Quand on a vu que cette carte et donc le correcteur fonctionnait comme prévu, c’est-à-dire qu’on réussissait à commander la trottinette vers l’avant, l’arrière, et arriver à maintenir une couple nulle. On pouvait donc passer à l’étape de test du correcteur numérique en réel.
@@ -247,11 +248,11 @@ Figure 1.4.5.1 - Banc trottinette câblé avec la carte de puissance codée.
 Le système récupérateur d’énergie est relié au banc trottinette avec un système de contrôle de tension avec un transistor et une partie dissipatrice permettant de dissiper de la chaleur lorsqu’il y a trop de récupération d’énergie afin d’éviter une augmentation/accumulation de tension. La trottinette est alimentée à travers le système de récupération d’énergie qui sert de mécanisme de protection entre l’alimentation et la trottinette. 
  
 Finalement, on a relié deux sondes de l'oscilloscope pour visualiser les signaux que l’on envoie et l’on reçoit du système. Cela nous permettait de comprendre le comportement du système quand on appliquait des entrées différentes (sinus / créneaux / basse fréquence / haute fréquence)  
-<img width="597" alt="creneaux_sortie_degrad" src="https://user-images.githubusercontent.com/98895859/214158580-781ff2fb-260c-495f-93d1-50a1b95fb1a3.png">
-Figure 1.4.5.2 - Observations sur l’oscilloscope lorsque l’on a mis un signal créneaux en entrée, basse fréquence (f=450mHz). On observe le phénomène de dégradation de la sortie à cause du long temps que met le système pour répondre. Le système n’arrive plus à accélérer, et on voit une dégradation du signal en sortie vers la fin du créneau/carré. 
+<img width="597" alt="creneaux_sortie_degrad" src="https://user-images.githubusercontent.com/98895859/214158580-781ff2fb-260c-495f-93d1-50a1b95fb1a3.png">\
+Figure 1.4.5.2 - Observations sur l’oscilloscope lorsque l’on a mis un signal créneaux en entrée, basse fréquence (f=450mHz). On observe le phénomène de dégradation de la sortie à cause du long temps que met le système pour répondre. Le système n’arrive plus à accélérer, et on voit une dégradation du signal en sortie vers la fin du créneau/carré.\ 
 <img width="597" alt="creneaux_sortie_normale" src="https://user-images.githubusercontent.com/98895859/214158683-df0af708-6c94-4d80-b695-47fc588052b3.png">
 Figure 1.4.5.3 - Observations sur l’oscilloscope lorsque l’on a mis un signal créneaux en entrée, à ≈ 1Hz, on voit que la sortie a à peu près la même amplitude que l’entrée, c'est-à-dire que l’on retrouve le gain de 0dB en basse fréquence.  
-<img width="597" alt="sinus_0707" src="https://user-images.githubusercontent.com/98895859/214158824-1bb18c96-53de-4b3c-b519-8bc5bb839c3d.png">
+<img width="597" alt="sinus_0707" src="https://user-images.githubusercontent.com/98895859/214158824-1bb18c96-53de-4b3c-b519-8bc5bb839c3d.png">\
 Figure 1.4.5.4 - Observations sur l’oscilloscope lorsque l’on a mis un sinus en entrée, sortie à 0,74 (presque 0,707…) lorsque l’on est près de la fréquence de coupure à 730Hz.  
 On n’a pas pris de photo lors de la fréquence de coupure exacte, mais on l’a mesurée à f ≈ 750Hz.
 Pour tester la trottinette lors de l’implémentation en réel, on veut vérifier trois choses : 
@@ -269,7 +270,7 @@ Pour vérifier la marge de phase, il faut estimer la stabilité en boucle fermé
 On n’a pas eu le temps de passer à l’étape de la conception de la boucle de vitesse, mais on va expliquer l’idée et comment on aurait fait si on avait le temps de le faire pour la trottinette. 
 La boucle de vitesse est une boucle extérieure qui va commander la consigne donnée en entrée de la boucle interne qui est celle que l’on a mise en œuvre préalablement.
 Pour l’étape de conception du correcteur de la boucle de vitesse, on va pouvoir simplifier la boucle interne. Cela est dû au fait qu'entre la sortie et l’entrée, puisque la régulation du courant en sortie du système est très rapide devant la régulation de vitesse nécessaire, on constate le comportement d’un simple bloc de gain qui permet de passer une consigne comprise entre [0;3.3] volts à un courant compris entre [-10;+10] ampères. De ce fait, on peut modéliser le système de régulation de vitesse de la trottinette de la manière suivante : 
-<img width="597" alt="schema_bloc_vitesse" src="https://user-images.githubusercontent.com/98895859/214159160-6de2c5dc-7b1c-4217-98d4-1c445ea401d6.png">
+<img width="597" alt="schema_bloc_vitesse" src="https://user-images.githubusercontent.com/98895859/214159160-6de2c5dc-7b1c-4217-98d4-1c445ea401d6.png">\
 Figure 2.1.1 - Schéma bloc simplifié permettant de plus facilement déterminer la fonction de transfert du correcteur de vitesse de la boucle de régulation de vitesse.  
 
 ## 3 - Autres évolutions du projet
