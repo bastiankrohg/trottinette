@@ -66,7 +66,9 @@ On ne prend pas en compte la perturbation E(p) car on E(p) à une dynamique lent
 - Le capteur de courant, selon le document technique, correspond à un gain de K_courant = 0.1042. 
 - La fonction de transfert du bloc de conditionnement peut se calculer à partir du schéma électronique dans la documentation technique:
 <img width="615" alt="Schema_elec " src="https://user-images.githubusercontent.com/98895859/214152431-1a18ccbc-a2a6-400a-9eac-6cced1587b62.png">
-Figure 1.1.4 - Schéma électronique du filtre F(p) de conditionnement\
+Figure 1.1.4 - Schéma électronique du filtre F(p) de conditionnement
+
+
 Pour analyser ce schéma électronique on peut d’abord analyser la partie statique et ensuite la partie dynamique.
 
 La partie statique servira à contrôler le gain statique du montage et la partie dynamique à calculer la fonction de transfert dynamique du système. Après calcul, on obtient la fonction de transfert finale suivante:\
@@ -189,23 +191,38 @@ $$C(z) = \frac{Y(z)}{U(z)} = \frac{a_0 z - a_1}{z - 1}$$
 $$Y(z)(z - 1) = U(z)(a_0 z - a_1) $$
 Avec la transformée inverse en z, on obtient:
 <div align="center">y<sub>n+1</sub> - y<sub>n</sub> = a<sub>0</sub> e<sub>n+1</sub> - a<sub>1</sub> e<sub>n</sub></div>
-\
+
+
 On pose n=n+1, et on obtient l’équation récurrente :
 <div align="center">y<sub>n</sub> = y<sub>n-1</sub> + a<sub>0</sub> e<sub>n</sub> - a<sub>1</sub> e<sub>n-1</sub></div>
-\
-Avec alpha = y et l’erreur = e\
+
+
+Avec alpha = y et l’erreur = e
+
+
 Cette fonction récurrente nous permet de calculer le nouveau alpha / nouveau rapport cyclique avec lequel on va commander le système à la sortie du bloc correcteur C(z) numérique. 
+
+
 #### 1.4.2 - Étapes de la conception du correcteur numérique
 L’utilisation du périphérique ADC fait que l’on doit réfléchir à ce à quoi correspondent les différents signaux et leurs plages de valeurs. Par exemple, pour le calcul de l’erreur où on prend l’écart entre le courant et la consigne, il faut penser à diviser ce résultat avant de l’utiliser dans le calcul de alpha. Sinon, il faut bien garder en tête ce que ces valeurs représentent. Par défaut, ce que renvoie la fonction Entree_3V3() de l’ADC est compris entre [0;4096]. Pour cela, il faut penser à ramener ces valeurs à la plage [0;3.3] si on souhaite avoir un alpha qui est bien compris entre [-0.5;+0.5]. Cela permet de faire le bon calcul de l’erreur, qui est utilisée pour le calcul de l’équation récurrente des nouvelles valeurs de alpha.  
 Afin de coder l’interruption principale de notre correcteur en C on a suivi les étapes suivants: 
-1. Initialisation\
-On initialise les valeurs de l’alpha et de l’erreur à n=0 à 0.0, la valeur de repos. Celles-ci sont importantes pour pouvoir commencer le calcul de l’équation récurrente 
-2. Acquisition de la consigne\
+
+1. Initialisation
+
+On initialise les valeurs de l’alpha et de l’erreur à n=0 à 0.0, la valeur de repos. Celles-ci sont importantes pour pouvoir commencer le calcul de l’équation récurrente
+
+2. Acquisition de la consigne
+
 On fait cela grâce à la fonction fournie dans le toolbox Entree_3V3().
-3. Acquisition du courant\
+
+3. Acquisition du courant
+
 On retrouve la mesure du courant grâce à la fonction I1(), également fournie.
-4. Calcul de la valeur courante d’epsilon, l’erreur entre le courant et la consigne\
-On commence par faire le calcul de l’écart : epsilon = (Cons_In - Courant_1)\
+
+4. Calcul de la valeur courante d’epsilon, l’erreur entre le courant et la consigne
+
+On commence par faire le calcul de l’écart : epsilon = (Cons_In - Courant_1)
+
 On ramene cette valeur à la plage de valeurs correspondante : Il faut multiplier par 3.3 et diviser par 4096 pour avoir une valeur qui correspond à la plage de valeurs de notre erreur afin de pouvoir calculer un alpha compris entre [-0.5;+0.5]. La valeur issue de cette opération est une float : epsilon = 3.3*(Cons_In - Courant_1)/4096
 5. Calcul de la nouvelle valeur analogique de alpha avec l’expression déduite de l’équation récurrente. L’alpha analogique signifie la sortie comprise entre [-0.5;+0.5].
 On utilise la formule déduite de l’équation récurrente:
@@ -258,7 +275,8 @@ Le système récupérateur d’énergie est relié au banc trottinette avec un s
  
 Finalement, on a relié deux sondes de l'oscilloscope pour visualiser les signaux que l’on envoie et l’on reçoit du système. Cela nous permettait de comprendre le comportement du système quand on appliquait des entrées différentes (sinus / créneaux / basse fréquence / haute fréquence)  
 <img width="597" alt="creneaux_sortie_degrad" src="https://user-images.githubusercontent.com/98895859/214158580-781ff2fb-260c-495f-93d1-50a1b95fb1a3.png">\
-Figure 1.4.5.2 - Observations sur l’oscilloscope lorsque l’on a mis un signal créneaux en entrée, basse fréquence (f=450mHz). On observe le phénomène de dégradation de la sortie à cause du long temps que met le système pour répondre. Le système n’arrive plus à accélérer, et on voit une dégradation du signal en sortie vers la fin du créneau/carré.\ 
+Figure 1.4.5.2 - Observations sur l’oscilloscope lorsque l’on a mis un signal créneaux en entrée, basse fréquence (f=450mHz). On observe le phénomène de dégradation de la sortie à cause du long temps que met le système pour répondre. Le système n’arrive plus à accélérer, et on voit une dégradation du signal en sortie vers la fin du créneau/carré.
+
 <img width="597" alt="creneaux_sortie_normale" src="https://user-images.githubusercontent.com/98895859/214158683-df0af708-6c94-4d80-b695-47fc588052b3.png">\
 Figure 1.4.5.3 - Observations sur l’oscilloscope lorsque l’on a mis un signal créneaux en entrée, à ≈ 1Hz, on voit que la sortie a à peu près la même amplitude que l’entrée, c'est-à-dire que l’on retrouve le gain de 0dB en basse fréquence.  
 <img width="597" alt="sinus_0707" src="https://user-images.githubusercontent.com/98895859/214158824-1bb18c96-53de-4b3c-b519-8bc5bb839c3d.png">\
