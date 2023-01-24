@@ -85,7 +85,8 @@ On comprend donc que si on assure une marche de phase supérieure à 45 degrés 
 
 Maintenant, il nous faut aussi une erreur statique nulle en boucle fermée. Quel correcteur choisir ? Nous allons essayer plusieurs correcteurs, du plus simple au plus complexe pour trouver celui qui nous convient et qui nous permet de respecter le cahier des changes.
 
-- Le correcteur proportionnel: C(p) = k
+- Le correcteur proportionnel: 
+$$C(p) = k $$
 
 Si on a par exemple une marge de phase de 45 degrés à 200Hz on peut trouver un gain k tel que on arrive à avoir cette marge de phase pour la fréquence de transition que l’on veut, ici 400Hz. En effet un gain élevé shiftera la courbe de gain vers le haut et un gain faible à l’inverse la shiftera vers le bas. Cependant l'erreur statique ne sera pas nulle et ne pourra jamais l’être avec ce type de correcteur à moins d’avoir un gain immense, ce qui entraînerait des instabilités et ce n’est pas ce que l’on recherche. Ce correcteur n’est donc pas le bon.
 
