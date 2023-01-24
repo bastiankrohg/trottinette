@@ -57,8 +57,12 @@ Il suffit maintenant d’exprimer les fonctions de transfert des différents blo
 - Le hacheur peut juste se traduire par un gain Khacheur  qui vaut 48 d’après la fiche technique. Cet élément permet à partir d’un rapport cyclique alpha, de fournir une tension continue. Cependant, si on analyse le spectre fréquentiel du signal généré entre +/- 24 Volts, la tension de la batterie, on peut voir la fondamental mais aussi des harmoniques (de 20kHz). Or, on aimerait garder uniquement la composante continue à 0Hz. Il faudrait donc rajouter un filtre passe bas pour éliminer les harmoniques. Cela n’est pas nécessaire dans notre cas car on attaque un moteur à courant continu en sortie qui est semblable à un filtre LR, un filtre passe bas avec une fréquence de coupure à 80Hz, ce qui permet de supprimer les harmoniques. La tension de sortie du hacheur UM est donc une tension continue avec une valeur de tension moyenne induite par alpha.
 - La fonction de transfert du moteur se traduit par un fonction de transfert du premier ordre : 
 <img width="495" alt="moteur" src="https://user-images.githubusercontent.com/98895859/214152198-3a25050f-af0e-4e92-8f3a-d91deb238811.png">
-Figure 1.1.3 - Schéma simplifié et calcul des caractéristiques du moteur\
-On ne prend pas en compte la perturbation E(p) car on E(p) à une dynamique lente par rapport au moteur. Donc on considérera que les variables sont indépendantes. Pour étudier la stabilité on peut ne pas prendre en compte cette perturbation. C’est donc pour cela qu’elle n'apparaît pas dans les calculs.\
+Figure 1.1.3 - Schéma simplifié et calcul des caractéristiques du moteur
+
+
+On ne prend pas en compte la perturbation E(p) car on E(p) à une dynamique lente par rapport au moteur. Donc on considérera que les variables sont indépendantes. Pour étudier la stabilité on peut ne pas prendre en compte cette perturbation. C’est donc pour cela qu’elle n'apparaît pas dans les calculs.
+
+
 - Le capteur de courant, selon le document technique, correspond à un gain de K_courant = 0.1042. 
 - La fonction de transfert du bloc de conditionnement peut se calculer à partir du schéma électronique dans la documentation technique:
 <img width="615" alt="Schema_elec " src="https://user-images.githubusercontent.com/98895859/214152431-1a18ccbc-a2a6-400a-9eac-6cced1587b62.png">
