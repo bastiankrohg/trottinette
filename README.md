@@ -25,6 +25,10 @@ Objectifs et compétences développées\
 Conclusion
 
 ## Introduction
+La trottinette Electrique est depuis quelques années très tendences et les ventes ne cessent d’augmenter. Les trottinettes sont aujourd'hui très permormantes et fonctionnent  avec un moteur brushless, un moteur directement mis dans la roue. Cependant, cela n’a pas toujours été le cas. En effet, la trottinette apparaît dans les années 2000. On peut alors en acheter une pour 30 euros, elles étaient équipées de moteur à courant continu, d’une batterie 12V, d’un bouton marche arret et de frein à tambour. Quelques années plus tard, le départenement génie électrique informatique acquiert une quinzaine de trottinettes et propose de faire des améliorations.
+En 2004, il propose de concevoir un variateur de vitesse à développer en BE. La régulation de couple était faite entièrement en analogique, la boucle de vitesse avec un µC PIC18F458, 8 bits 12MHz. De plus, le système permettait la récupération d’énergie au freinage pour une plus grande autonomie. A cette époque aucune trottinette ne proposait cela.
+Puis en 2012, le STM32F103 entre au GEI. Sa puissance permet d’intégrer les deux boucles entièrement en numérique, c’est sur cette version de la trottinette que nous avons travaillé cette année lors de ce BE. Au travers de plusieurs scéances nous allons étudier ce système et proposer une implémentation de correcteur pour contrôler la trottinette. Ce Be nous permet d’acquérir de nouvelles compétences et d’apprendre plus de choses sur la conception et l’analyse des systèmes électroniques.
+
 
 ## Objectifs et compétences développées
 L’objectif de ce BE Trottinette est d'arriver à comprendre et à analyser un système électronique complexe dans le but d’implémenter une commande en couple et en vitesse d’une trottinette électrique. 
@@ -125,9 +129,13 @@ Figure 1.2.2 - Simulink système asservi version 1\
 ![reponse_echelon_v1](https://user-images.githubusercontent.com/98895859/214155154-caa3018c-f12e-4ddd-8cfb-2f9564ec0781.PNG)\
 Figure 1.2.3 - Simulink - réponse à un échelon d’amplitude 1.65 
 ![erreur_v1](https://user-images.githubusercontent.com/98895859/214155225-bc41ce87-02f1-4660-b169-6833c3dd5168.PNG)\
-Figure 1.2.4 - Simulink - erreur du système - on voit bien qu’on a une erreur nulle après un certain temps\
+Figure 1.2.4 - Simulink - erreur du système - On peut voir que le système en boucle fermée arrive à se réguler et après un temps très court l’erreur devient nulle. Le système répond très rapidement.\
 ![alpha_not_real_v1](https://user-images.githubusercontent.com/98895859/214155244-e284043b-6ad6-4229-8d06-e20aca19f88c.PNG)\
-Figure 1.2.5 - Simulink - Le signal alpha - le signal pwm qui est envoyé à l’issue du bloc correcteur du système. Ici on voit bien que le alpha dépasse à un moment les valeurs admises, car normalement alpha est censé être compris dans l’intervalle [-0.5; +0.5]. Le système essaie d’être commandé si rapidement que le correcteur essaie d’envoyer un signal pwm de rapport cyclique > 100% (à alpha=+0.5) qui n’a pas de sens physique.
+Figure 1.2.5 - Simulink - Le signal alpha - Sur ce graphique, on peut voir que le signal pwm qui est envoyé à l’issue du bloc correcteur du système dépasse à un moment les valeurs admises. Normalement, alpha, le rapport cyclique est censé être compris dans l’intervalle [-0.5; +0.5].
+
+On peut également voir que alpha ne reste pas dans l’intervalle des valeurs admissibles. Cela est dû au fait que l’on veur une valeur très grande et donc le système envoie un signal pwm de rapport cyclique suppérieur à 100% pour répondre le plus rapidement possible. Cependant, un rapport cyclique supérieur à 100% n'a aucun sens physique. Dans la réalité, le système sera en saturation. Pour modéliser la saturation et être au plus proche de la réalité nous avons réjouté un bloc saturateur dans le schéma simulink pour contraindre les valeurs de alpha.
+
+
 
 #### Version 2 : 
 ![simulink_v2_saturateur](https://user-images.githubusercontent.com/98895859/214155324-2243e825-0b6e-4b16-9112-925e26087405.PNG)
@@ -135,9 +143,9 @@ Figure 1.2.6 - Version 2 du système sous simulink - on fait évoluer notre syst
 ![reponse_echelon_depassement_de_saturation_v2](https://user-images.githubusercontent.com/98895859/214155359-d350e298-7887-4f5d-8a25-e6d32d837271.PNG)\
 Figure 1.2.7 - La réponse à un échelon de 1.65 du système avec saturateur. On voit l’apparition du phénomène de dépassement lié à la saturation lorsque l’on essaie d’exciter un système plus rapidement que son slew rate.\
 ![erreur_avec_saturateur_v2](https://user-images.githubusercontent.com/98895859/214155365-9b7e009d-6fa9-4a61-9fba-e27a95a47e96.PNG)\
-Figure 1.2.8 - L’erreur pour la version 2 du système (avec saturateur)
+Figure 1.2.8 - L’erreur pour la version 2 du système (avec saturateur) On peut voir que non a une erreur nulle en régime permanent. Cependant, le temps pour l’obetnir est un peu plus long que dans la version 1. Ceci est tout à fait normal étant donné que nous avons contraint la valeur de alpha, le système répond un peu plus lentement. D’où cette allure de courbe.
 ![alpha_sature_v2](https://user-images.githubusercontent.com/98895859/214155374-c7617d3a-6216-4171-b35f-1e0c02fe7aef.PNG)\
-Figure 1.2.9 - L’alpha quand on ajoute un bloc de saturation à ±0.5. 
+Figure 1.2.9 - L’alpha quand on ajoute un bloc de saturation à ±0.5. On voit que alpha sature pendant un court instant jusqu'à que le système réponde et que alpha se stabilise.
 
 ### 1.3 - Passage au discret - Asservissement dans le domaine discret
 Lorsque l'on passe du continu vers le discret, on passe d'une représentation en continu comme ceci : 
@@ -159,9 +167,11 @@ $$C(z) = \frac{a_0 z - a_1}{z - 1}$$
 ![simulink_v3_discret_w_color](https://user-images.githubusercontent.com/98895859/214155591-e20297d7-783b-4ab1-86af-8590f05813ed.PNG)
 Figure 1.3.1 - Simulink - Version 3 du système, on a enlevé le bloc correcteur continu de la version 2 et on a ajouté un bloc correcteur discret. Ici les couleurs correspondent aux différents domaines des signaux, c’est-à-dire que le noir est en continu, le rouge est en discret, et le bloc jaune correspond à un bloc qui convertit un signal discret en continu. On a choisi de rajouter le bloc échantillonneur Te en amont du bloc C_z afin de discrétiser avec la bonne période d’échantillonnage Te. 
 ![reponse_echelon_plus_petit_discret_v3](https://user-images.githubusercontent.com/98895859/214155651-dd6fbe22-cbde-428d-b6a5-ff83fea56cb5.PNG)\
-Figure 1.3.2 - Réponse à un échelon de 1.65 avec le correcteur discret. On remarque que le phénomène de dépassement lié à la saturation y est toujours.  
+Figure 1.3.2 - Réponse à un échelon de 1.65 avec le correcteur discret. On remarque que le phénomène de dépassement lié à la saturation y est toujours.
+On remarque que le phénomène de dépassement lié à la saturation y est toujours.  De plus, on peut voir que la courbe de la version 3 est bien moins lisse que celle de la version 2. Cela est dû à la période d’échantillonage. Cependant, les allures sont les mêmes.  
 ![erreur_continue_avec_C_z_v3](https://user-images.githubusercontent.com/98895859/214155686-727b3ebb-618d-42db-9d96-8b45034d32f0.PNG)\
 Figure 1.3.3 - L’erreur lorsque l’on passe en discret.
+On remaque une faible oscillation du à l’échantillonage. Cependant l’erreur est également nulle en régime permanent et la réponse est rapide.
 
 
 ![alpha_discret_v3](https://user-images.githubusercontent.com/98895859/214155739-be04db83-4f66-48a6-ad53-e1f572024de2.PNG)\
@@ -305,6 +315,9 @@ Le projet de la trottinette peut évoluer encore plus, car il serait possible d�
 
 ## Conclusion
 
+Lors de ce BE, nous avons dû mobiliser de nombreuses connaissances en électronique et en automatique pour implémenter un correcteur pour une régulation de couple et de vitesse sur une trottinette électrique au travers d’un micro-controlleur.
+ Nous avons commencé par l’analyse du système au travers de schémas et des documentations techniques des différents éléments nécessaires à son fonctionnement. Grâce à cette analyse et à cette compréhension du système, nous avons été capable d' extraire un schéma bloc de Laplace qui fut notre base de travail pour la recherche du bon correcteur. Après l’étude de stabilité du système en boucle ouverte et d’après les spécifications du cahier des charges nous avons décidé de prendre un correcteur proportionnel intégral qui nous permettait de répondre au cahier des charges et d’avoir un système stable. Après calculs et vérifications avec simulink, nous avons implémenté ce correcteur dans un STM32 et nous avons finalement testé sur le matériel à disposition. 
+Ce BE a été compliqué à certains moments car il demandait d’avoir une excellente compréhension théorique de certains éléments mais nous a permis de mener une étude approfondie d’un système électronique et de mettre en lien des connaissances de plusieurs domaines pour répondre à une problématique, en suivant une démarche scientifique et professionnelle. Ce fut un BE très intéressant pour nous et très enrichissant, tant par l’apport de connaissance que par la mise en application de celles-ci.
 
 
 

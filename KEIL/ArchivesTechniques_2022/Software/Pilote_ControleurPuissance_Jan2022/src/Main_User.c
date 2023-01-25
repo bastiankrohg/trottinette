@@ -3,21 +3,6 @@
 * Bastian Krohg et Nicolas Siard
 * 4A AE-SE Groupe 1 
 * Partie correcteur numérique avec u-controleur
-*
-* =============================================
-* Avancement: 
-* 	- Fini IT_Principal
-* 	- Fini calculs des coefficients du correcteur 
-			numérique et verification de l'AN: OK	
-*	Reste à faire: 
-*		- Allumer/eteindre LEDs
-* 	- Verification avec Logic Analyzer
-			- Bon comportement du correcteur numérique
-				Verification du comportement par rapport 
-				au simulink discret. 
-* =============================================
-*
-*
 */
 
 /*
