@@ -42,6 +42,7 @@ Ce BE comprend beaucoup de concepts qu’il nous faut comprendre pour pouvoir r�
 
 ### 1.1 - Premier approche et prise en main du système
 Tout d’abord il faut avoir une vue d’ensemble du système et comprendre de quels éléments il est composé et comment ces derniers interagissent entre eux. Pour cela nous avons le dossier technique à notre disposition. Nous pouvons commencer par analyser le diagramme en bloc qui indique comment les blocs de la commande électronique sont reliés les uns aux autres. Cela nous permet d’identifier les différents blocs que nous aurons dans le schéma bloc du système.
+
 <img width="616" alt="diagramme_cmd_elec" src="https://user-images.githubusercontent.com/98895859/214151608-f5abf345-e0fd-42fd-9824-a49e8d0ae07c.png">\
 Figure 1.1.1 - Diagramme en bloc de la commande électronique\
 Il a donc les différents blocs:\
